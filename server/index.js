@@ -1,0 +1,45 @@
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+dotenv.config();
+import AuthRouter from "./routes/authRouter.js";
+import StudentRouter from "./routes/studentRouter.js"
+import MeetingRouter from "./routes/meetingRouter.js";
+const app = express();
+
+app.use(cors({
+  origin:"http://localhost:5173",
+  credentials:true,
+}));
+
+app.use(express.json());
+
+//Routers
+app.use("/auth", AuthRouter);
+app.use("/meeting", MeetingRouter);
+// app.use("/teacher", TeacherRouter);
+app.use("/students", StudentRouter);
+
+
+
+const PORT = process.env.PORT || 3000;
+
+
+
+app.get("/", (req, res) => {
+  res.send("Hello from the server!");
+});
+
+app.use((err, req, res, next) => {
+  const errorMessage = err.message || "Internal Server Error";
+  const stausCode = err.statusCode || 500;
+
+  res.status(stausCode).json({ message: errorMessage });
+});
+
+
+app.listen(process.env.PORT, () => {
+  connectDB();
+  console.log(`Server running on port ${process.env.PORT}`);
+});
