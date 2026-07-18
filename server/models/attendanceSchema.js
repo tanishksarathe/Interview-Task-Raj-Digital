@@ -1,37 +1,39 @@
 import mongoose from "mongoose";
 
-const attendanceSchema = new mongoose.Schema({
+const attendanceSchema = new mongoose.Schema(
+  {
     meeting: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Meeting",
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Meeting",
+      required: true,
     },
     participant: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",    
-    required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    status: {   
-        type: String,
-        enum: ["Present", "Absent"],
-        default: "Absent"
+    status: {
+      type: String,
+      enum: ["Present", "Absent"],
+      default: "Absent",
     },
-    joinTime:{
-        type: Date,
-        default: null
+    joinTime: {
+      type: Date,
+      default: null,
     },
-    leaveTime:{
-        type: Date,
-        default: null
+    leaveTime: {
+      type: Date,
+      default: null,
     },
-    duration:{
-        type: String,
-        default: null
-    }
-
-}, {
-    timestamps: true
-});
+    duration: {
+      type: String,
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
 
 const Attendance = mongoose.model("Attendance", attendanceSchema);
 

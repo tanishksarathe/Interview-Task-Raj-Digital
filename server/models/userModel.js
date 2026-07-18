@@ -20,12 +20,19 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["teacher", "student",""],
+      enum: ["teacher", "student", ""],
       default: "",
     },
     photo: {
       type: String,
       default: "",
+    },
+    google: {
+      accessToken: String,
+
+      refreshToken: String,
+
+      expiryDate: Number,
     },
   },
   {

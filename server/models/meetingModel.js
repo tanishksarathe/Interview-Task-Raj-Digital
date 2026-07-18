@@ -1,10 +1,11 @@
-import express from "express";
+import mongoose from "mongoose";
 
-const meetingSchema = new express.Schema({
-    mentor : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "User",
-        required : true
+const meetingSchema = new mongoose.Schema(
+  {
+    mentor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     participants: [
       {
@@ -13,49 +14,59 @@ const meetingSchema = new express.Schema({
       },
     ],
 
-    title:{
-        type : String,
-        required : true
+    title: {
+      type: String,
+      required: true,
     },
-    description : {
-        type : String,
-        required : true
+    description: {
+      type: String,
+      required: true,
     },
-    meetingType:{
-        type : String,
-        enum:[ "Interview", "Technical Assessment", "Training", "Classroom", "Mentorship", "Mock Interview", "Group Discussion" ],
-        required : true
+    meetingType: {
+      type: String,
+      enum: [
+        "Interview",
+        "Technical Assessment",
+        "Training",
+        "Classroom",
+        "Mentorship",
+        "Mock Interview",
+        "Group Discussion",
+      ],
+      required: true,
     },
-    startTime : {
-        type : Date,
-        required : true
+    startTime: {
+      type: Date,
+      required: true,
     },
-    endTime : {
-        type : Date,
-        required : true
+    endTime: {
+      type: Date,
+      required: true,
     },
-    date:{
-        type : Date,
-        required : true
+    date: {
+      type: Date,
+      required: true,
     },
-    googleEventId:{
-        type : String,
-        default : ""
+    googleEventId: {
+      type: String,
+      default: "",
     },
-    meetLink:{
-        type : String,
-        default : ""
+    meetLink: {
+      type: String,
+      default: "",
     },
-    status:{
-        type : String,
-        enum : ["Scheduled", "Completed", "Cancelled"],
-        default : "Scheduled"
-    }
-
-},{
-    timestamps : true,
-})
+    status: {
+      type: String,
+      enum: ["Scheduled", "Completed", "Cancelled"],
+      default: "Scheduled",
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
 
 const Meeting = mongoose.model("Meeting", meetingSchema);
 
 export default Meeting;
+    

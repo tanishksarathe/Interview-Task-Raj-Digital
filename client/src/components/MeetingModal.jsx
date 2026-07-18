@@ -96,15 +96,15 @@ export default function CreateMeetingModal({ onClose }) {
     );
   }, [formData.participants]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log("Submitting Form Data:", formData);
     try {
-        const res = await api.post("/meetings/new-meet", formData);
-    console.log(res?.data?.data);
+      const res = await api.post("/meeting/new-meet", formData);
+      console.log(res?.data?.data);
 
     } catch (error) {
-        console.log(error);
+      console.error(error);
     }
   };
 

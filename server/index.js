@@ -6,6 +6,7 @@ dotenv.config();
 import AuthRouter from "./routes/authRouter.js";
 import StudentRouter from "./routes/studentRouter.js"
 import MeetingRouter from "./routes/meetingRouter.js";
+import googleRouter from "./routes/googleRouter.js";
 const app = express();
 
 app.use(cors({
@@ -20,6 +21,7 @@ app.use("/auth", AuthRouter);
 app.use("/meeting", MeetingRouter);
 // app.use("/teacher", TeacherRouter);
 app.use("/students", StudentRouter);
+app.use("/google", googleRouter);
 
 
 
