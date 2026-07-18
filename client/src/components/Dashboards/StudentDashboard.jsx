@@ -2,15 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../config/API';
 import toast from 'react-hot-toast';
-import { 
-  Calendar, 
-  CheckCircle, 
-  Mail, 
-  Video, 
-  History, 
-  User as UserIcon,
-  ChevronRight,
-  GraduationCap
+import MeetingCalendar from './MeetingCalendar';
+import MeetingHistoryModal from './MeetingHistoryModal';
+import AttendanceModal from './AttendanceModal';
+import {
+    Calendar,
+    CheckCircle,
+    Mail,
+    Video,
+    History,
+    User as UserIcon,
+    ChevronRight,
+    GraduationCap,
+    List,
+    Calendar as CalendarIcon
 } from 'lucide-react';
 import dayjs from 'dayjs';
 
@@ -18,6 +23,9 @@ const StudentDashboard = () => {
     const { user } = useAuth();
     const [meetings, setMeetings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [viewMode, setViewMode] = useState('list');
+    const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+    const [attendanceMeetingId, setAttendanceMeetingId] = useState(null);
 
     useEffect(() => {
         const fetchMeetings = async () => {
@@ -36,7 +44,7 @@ const StudentDashboard = () => {
 
     // Calculate stats
     const today = dayjs().startOf('day');
-    
+
     const upcomingMeetingsCount = meetings.filter(m => m.status === 'Scheduled' && (dayjs(m.date).isAfter(today, 'day') || dayjs(m.date).isSame(today, 'day'))).length;
     const completedMeetingsCount = meetings.filter(m => m.status === 'Completed').length;
     const pendingInvitations = 0; // Static 0 for now as per schema logic
@@ -70,7 +78,7 @@ const StudentDashboard = () => {
             console.error("Attendance Error:", error);
             const msg = error.response?.data?.message || "Failed to mark attendance";
             toast.error(msg);
-            
+
             // If you want to strictly prevent joining if attendance fails, keep it this way.
             // If it's a "Already joined" error, the API currently doesn't throw, it returns success.
         }
@@ -79,7 +87,7 @@ const StudentDashboard = () => {
     return (
         <div className="min-h-screen bg-zinc-50 p-6 lg:p-8 font-sans selection:bg-zinc-200">
             <div className="max-w-7xl mx-auto space-y-8">
-                
+
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -110,8 +118,8 @@ const StudentDashboard = () => {
                     <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 p-6 lg:col-span-1 h-fit">
                         <h3 className="text-lg font-semibold text-zinc-900 mb-4">Quick Actions</h3>
                         <div className="space-y-3">
-                            <a 
-                                href={nextMeeting?.meetLink || '#'} 
+                            <a
+                                href={nextMeeting?.meetLink || '#'}
                                 onClick={(e) => {
                                     if (nextMeeting) {
                                         handleJoinMeeting(e, nextMeeting);
@@ -133,7 +141,10 @@ const StudentDashboard = () => {
                                 <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:text-zinc-900 transition-colors" />
                             </a>
 
-                            <button className="w-full flex items-center justify-between p-4 rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-transparent hover:border-zinc-300 transition-all group">
+                            <button
+                                onClick={() => setIsHistoryOpen(true)}
+                                className="w-full flex items-center justify-between p-4 rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-transparent hover:border-zinc-300 transition-all group"
+                            >
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-white border border-zinc-200 text-zinc-700 rounded-lg group-hover:bg-zinc-900 group-hover:text-white group-hover:border-zinc-900 transition-colors">
                                         <History className="w-5 h-5" />
@@ -155,85 +166,126 @@ const StudentDashboard = () => {
                         </div>
                     </div>
 
-                    {/* Upcoming Meetings List */}
+                    {/* Upcoming Meetings List / Calendar */}
                     <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden lg:col-span-2">
                         <div className="p-6 border-b border-zinc-100 flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-zinc-900">Upcoming Meetings</h3>
-                            <button className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors">View All</button>
+                            <h3 className="text-lg font-semibold text-zinc-900">Meetings Overview</h3>
+                            <div className="flex items-center gap-1 bg-zinc-100 p-1 rounded-lg">
+                                <button
+                                    onClick={() => setViewMode('list')}
+                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'list' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
+                                >
+                                    <List className="w-4 h-4" />
+                                    List
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('calendar')}
+                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'calendar' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
+                                >
+                                    <CalendarIcon className="w-4 h-4" />
+                                    Calendar
+                                </button>
+                            </div>
                         </div>
-                        
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="bg-zinc-50 border-b border-zinc-200">
-                                        <th className="px-6 py-4 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Title</th>
-                                        <th className="px-6 py-4 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Mentor</th>
-                                        <th className="px-6 py-4 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Date & Time</th>
-                                        <th className="px-6 py-4 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-4 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-zinc-100">
-                                    {loading ? (
-                                        <tr>
-                                            <td colSpan="5" className="px-6 py-8 text-center text-zinc-500">Loading meetings...</td>
+
+                        {viewMode === 'list' ? (
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-zinc-50 border-b border-zinc-200">
+                                            <th className="px-6 py-4 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Title</th>
+                                            <th className="px-6 py-4 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Mentor</th>
+                                            <th className="px-6 py-4 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Date & Time</th>
+                                            <th className="px-6 py-4 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Status</th>
+                                            <th className="px-6 py-4 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Action</th>
                                         </tr>
-                                    ) : meetings.length === 0 ? (
-                                        <tr>
-                                            <td colSpan="5" className="px-6 py-8 text-center text-zinc-500">No upcoming meetings found.</td>
-                                        </tr>
-                                    ) : (
-                                        meetings.filter(m => m.status === 'Scheduled').slice(0, 5).map((meeting) => (
-                                            <tr key={meeting._id} className="hover:bg-zinc-50 transition-colors">
-                                                <td className="px-6 py-4">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-700">
-                                                            <GraduationCap className="w-4 h-4" />
-                                                        </div>
-                                                        <span className="font-medium text-zinc-900">{meeting.title}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="h-8 w-8 rounded-full bg-zinc-200 border border-zinc-300 flex items-center justify-center text-xs font-bold text-zinc-700" title={meeting.mentor?.username}>
-                                                            {meeting.mentor?.username ? meeting.mentor.username.charAt(0).toUpperCase() : '?'}
-                                                        </div>
-                                                        <span className="text-sm font-medium text-zinc-700">{meeting.mentor?.username || 'Unknown'}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex flex-col">
-                                                        <span className="text-sm font-medium text-zinc-900">{dayjs(meeting.date).format('MMM D, YYYY')}</span>
-                                                        <span className="text-xs text-zinc-500">{dayjs(meeting.startTime).format('h:mm A')} - {dayjs(meeting.endTime).format('h:mm A')}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getStatusStyle(meeting.status)}`}>
-                                                        {meeting.status}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    {meeting.meetLink ? (
-                                                        <a 
-                                                            href={meeting.meetLink} 
-                                                            onClick={(e) => handleJoinMeeting(e, meeting)}
-                                                            className="text-sm font-medium text-zinc-900 underline decoration-zinc-300 hover:decoration-zinc-900 transition-colors"
-                                                        >
-                                                            Join
-                                                        </a>
-                                                    ) : (
-                                                        <span className="text-sm text-zinc-400">No link</span>
-                                                    )}
-                                                </td>
+                                    </thead>
+                                    <tbody className="divide-y divide-zinc-100">
+                                        {loading ? (
+                                            <tr>
+                                                <td colSpan="5" className="px-6 py-8 text-center text-zinc-500">Loading meetings...</td>
                                             </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                                        ) : meetings.length === 0 ? (
+                                            <tr>
+                                                <td colSpan="5" className="px-6 py-8 text-center text-zinc-500">No upcoming meetings found.</td>
+                                            </tr>
+                                        ) : (
+                                            meetings.filter(m => m.status === 'Scheduled').slice(0, 5).map((meeting) => (
+                                                <tr key={meeting._id} className="hover:bg-zinc-50 transition-colors">
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-8 h-8 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-700">
+                                                                <GraduationCap className="w-4 h-4" />
+                                                            </div>
+                                                            <span className="font-medium text-zinc-900">{meeting.title}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="h-8 w-8 rounded-full bg-zinc-200 border border-zinc-300 flex items-center justify-center text-xs font-bold text-zinc-700" title={meeting.mentor?.username}>
+                                                                {meeting.mentor?.username ? meeting.mentor.username.charAt(0).toUpperCase() : '?'}
+                                                            </div>
+                                                            <span className="text-sm font-medium text-zinc-700">{meeting.mentor?.username || 'Unknown'}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-sm font-medium text-zinc-900">{dayjs(meeting.date).format('MMM D, YYYY')}</span>
+                                                            <span className="text-xs text-zinc-500">{dayjs(meeting.startTime).format('h:mm A')} - {dayjs(meeting.endTime).format('h:mm A')}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getStatusStyle(meeting.status)}`}>
+                                                            {meeting.status}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        {meeting.meetLink ? (
+                                                            <a
+                                                                href={meeting.meetLink}
+                                                                onClick={(e) => handleJoinMeeting(e, meeting)}
+                                                                className="text-sm font-medium text-zinc-900 underline decoration-zinc-300 hover:decoration-zinc-900 transition-colors"
+                                                            >
+                                                                Join
+                                                            </a>
+                                                        ) : (
+                                                            <span className="text-sm text-zinc-400">No link</span>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <div className="p-4 border-t border-zinc-100">
+                                <MeetingCalendar meetings={meetings} handleJoin={handleJoinMeeting} />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
+
+            {isHistoryOpen && (
+                <MeetingHistoryModal
+                    meetings={meetings}
+                    onClose={() => setIsHistoryOpen(false)}
+                    isFaculty={false}
+                    onViewAttendance={(id) => {
+                        setIsHistoryOpen(false);
+                        setAttendanceMeetingId(id);
+                    }}
+                />
+            )}
+
+            {attendanceMeetingId && (
+                <AttendanceModal
+                    meetingId={attendanceMeetingId}
+                    onClose={() => setAttendanceMeetingId(null)}
+                    studentId={user._id}
+                />
+            )}
         </div>
     );
 };

@@ -60,6 +60,18 @@ const meetingSchema = new mongoose.Schema(
       enum: ["Scheduled", "Completed", "Cancelled"],
       default: "Scheduled",
     },
+    reminded24h: {
+      type: Boolean,
+      default: false,
+    },
+    reminded1h: {
+      type: Boolean,
+      default: false,
+    },
+    reminded15m: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

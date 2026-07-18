@@ -1,2 +1,78 @@
 @import 'tailwindcss';
 
+/* Custom react-big-calendar styles */
+.custom-calendar .rbc-toolbar button {
+    color: #52525b; /* zinc-500 */
+    border-color: #e4e4e7; /* zinc-200 */
+    border-radius: 0.5rem; /* rounded-lg */
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.custom-calendar .rbc-toolbar button:hover {
+    background-color: #f4f4f5; /* zinc-100 */
+    color: #18181b; /* zinc-900 */
+}
+
+.custom-calendar .rbc-toolbar button.rbc-active {
+    background-color: #18181b; /* zinc-900 */
+    color: #ffffff; /* white */
+    border-color: #18181b;
+}
+
+.custom-calendar .rbc-toolbar button.rbc-active:hover,
+.custom-calendar .rbc-toolbar button.rbc-active:focus {
+    background-color: #000000; /* black */
+    color: #ffffff;
+}
+
+.custom-calendar .rbc-header {
+    padding: 0.5rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #71717a; /* zinc-500 */
+    border-bottom: 1px solid #e4e4e7; /* zinc-200 */
+}
+
+.custom-calendar .rbc-month-view,
+.custom-calendar .rbc-time-view,
+.custom-calendar .rbc-agenda-view {
+    border-radius: 0.5rem;
+    border-color: #e4e4e7; /* zinc-200 */
+}
+
+.custom-calendar .rbc-day-bg + .rbc-day-bg {
+    border-left: 1px solid #f4f4f5; /* zinc-100 */
+}
+
+.custom-calendar .rbc-month-row + .rbc-month-row {
+    border-top: 1px solid #f4f4f5; /* zinc-100 */
+}
+
+.custom-calendar .rbc-off-range-bg {
+    background-color: #fafafa; /* zinc-50 */
+}
+
+.custom-calendar .rbc-today {
+    background-color: #f4f4f5; /* zinc-100 */
+}
+
+.custom-calendar .rbc-event {
+    background-color: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+.custom-calendar .rbc-event-content {
+    height: 100%;
+}
+
+.custom-calendar .rbc-show-more {
+    color: #18181b; /* zinc-900 */
+    font-weight: 600;
+    font-size: 0.75rem;
+    background-color: transparent;
+}

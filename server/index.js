@@ -8,6 +8,7 @@ import StudentRouter from "./routes/studentRouter.js"
 import MeetingRouter from "./routes/meetingRouter.js";
 import googleRouter from "./routes/googleRouter.js";
 import attendanceRouter from "./routes/attendanceRouter.js";
+import { startReminderCron } from "./cron/reminderCron.js";
 import cookieParser from "cookie-parser";
 const app = express();
 
@@ -48,5 +49,6 @@ app.use((err, req, res, next) => {
 
 app.listen(process.env.PORT, () => {
   connectDB();
+  startReminderCron();
   console.log(`Server running on port ${process.env.PORT}`);
 });
