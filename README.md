@@ -142,5 +142,5 @@ Please adhere to standard code formatting conventions and ensure all code is pro
 
 ## 10. Support/Contact
 For any queries, feature requests, or support, please contact the developer at:
-- **Email**: developer@example.com
-- **GitHub**: [@your-username](https://github.com/your-username)
+- **Email**: tanishk.workforme@gmail.com
+- **GitHub**: [@your-username](https://github.com/tanishksarathe)
