@@ -23,7 +23,8 @@ const GoogleLogin = () => {
       
       const res = await api.patch("/auth/update-role", formData);
 
-      setUser(res?.data?.data);
+      setUser(res?.data?.user);
+      sessionStorage.setItem("EduUser", JSON.stringify(res?.data?.user));
 
     } catch (error) {
       console.log(error);
@@ -70,6 +71,7 @@ const GoogleLogin = () => {
   return (
     <>
     {
+      !user && (
       <div className="flex justify-center items-center gap-5 text-sm">
       Can Register/Login via
       <button
@@ -80,9 +82,12 @@ const GoogleLogin = () => {
         Continue with Google
       </button>
     </div> 
+      )
     }
     {
-      shouldCompleteProfile && (<div className="mx-auto mt-10 w-full max-w-xl rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-lg">
+      shouldCompleteProfile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="mx-auto w-full max-w-xl rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-lg">
       <div className="text-center">
         <h2 className="text-xl font-semibold text-white">
           Choose Your Role
@@ -96,10 +101,10 @@ const GoogleLogin = () => {
       <div className="mt-6 grid grid-cols-2 gap-4">
         <button
           onClick={() =>
-            setFormData({ ...formData, role: "Teacher" })
+            setFormData({ ...formData, role: "teacher" })
           }
           className={`rounded-xl border p-5 transition-all duration-300 ${
-            formData.role === "Teacher"
+            formData.role === "teacher"
               ? "border-white bg-white text-black"
               : "border-zinc-700 bg-black text-white hover:border-white"
           }`}
@@ -107,7 +112,7 @@ const GoogleLogin = () => {
           <div className="text-lg font-semibold">Teacher</div>
           <p
             className={`mt-2 text-sm ${
-              formData.role === "Teacher"
+              formData.role === "teacher"
                 ? "text-zinc-700"
                 : "text-zinc-400"
             }`}
@@ -118,10 +123,10 @@ const GoogleLogin = () => {
 
         <button
           onClick={() =>
-            setFormData({ ...formData, role: "Student" })
+            setFormData({ ...formData, role: "student" })
           }
           className={`rounded-xl border p-5 transition-all duration-300 ${
-            formData.role === "Student"
+            formData.role === "student"
               ? "border-white bg-white text-black"
               : "border-zinc-700 bg-black text-white hover:border-white"
           }`}
@@ -129,7 +134,7 @@ const GoogleLogin = () => {
           <div className="text-lg font-semibold">Student</div>
           <p
             className={`mt-2 text-sm ${
-              formData.role === "Student"
+              formData.role === "student"
                 ? "text-zinc-700"
                 : "text-zinc-400"
             }`}
@@ -151,7 +156,9 @@ const GoogleLogin = () => {
     Continue
   </button>
 </div>
-    </div>)
+</div>
+        </div>
+      )
     }
     </>
   );

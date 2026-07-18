@@ -18,4 +18,4 @@ Optional settings:
 - `GOOGLE_CALENDAR_ID` defaults to `primary`
 - `GOOGLE_CALENDAR_TIME_ZONE` defaults to `UTC`
 
-The create-meeting request is available at `POST /meetings/new-meet` and expects authenticated requests with the JWT cookie already set.
+The create-meeting request is available at `POST /meeting/createmeeting` and expects authenticated requests with the JWT cookie already set.

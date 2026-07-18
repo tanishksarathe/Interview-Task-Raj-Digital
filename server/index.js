@@ -7,7 +7,11 @@ import AuthRouter from "./routes/authRouter.js";
 import StudentRouter from "./routes/studentRouter.js"
 import MeetingRouter from "./routes/meetingRouter.js";
 import googleRouter from "./routes/googleRouter.js";
+import attendanceRouter from "./routes/attendanceRouter.js";
+import cookieParser from "cookie-parser";
 const app = express();
+
+app.use(cookieParser());
 
 app.use(cors({
   origin:"http://localhost:5173",
@@ -22,6 +26,7 @@ app.use("/meeting", MeetingRouter);
 // app.use("/teacher", TeacherRouter);
 app.use("/students", StudentRouter);
 app.use("/google", googleRouter);
+app.use("/attendance", attendanceRouter);
 
 
 

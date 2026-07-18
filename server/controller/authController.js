@@ -5,11 +5,16 @@ import verifyGoogleLogin from "../util/OAuthVerify.js";
 export const registerController = async (req, res, next) => {};
 
 export const loginController = async (req, res, next) => {
+  console.log("Login ke andar");
   const { idToken } = req.body;
+  // console.log("Id Token : ", idToken);
 
   const payload = await verifyGoogleLogin(idToken);
+  // console.log("Payload : ", payload);
 
   const existingUser = await User.findOne({ email: payload.email });
+
+  // console.log("Line number 17");
 
   if (existingUser) {
     await genToken(existingUser, res);
@@ -28,6 +33,8 @@ export const loginController = async (req, res, next) => {
   });
 
   await genToken(newUser, res);
+
+  // console.log("Line number 37");
 
   return res
     .status(201)

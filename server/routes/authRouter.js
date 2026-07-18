@@ -11,6 +11,6 @@ router.get("/logout", logoutController);
 
 router.patch("/update-role", protect,updateRoleController)
 
-router.get("/google/callback",protect,googleCallback);
+router.get("/google/callback",googleCallback);
 
 export default router;

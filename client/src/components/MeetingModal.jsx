@@ -11,6 +11,7 @@ import {
   CheckSquare,
   Square,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
 import api from "../config/API";
@@ -85,26 +86,29 @@ export default function CreateMeetingModal({ onClose }) {
   // Search filtering logic
   const filteredStudents = useMemo(() => {
     return allStudents.filter((student) =>
-      student.username.toLowerCase().includes(searchQuery.toLowerCase()),
+      student.username?.toLowerCase().includes(searchQuery.toLowerCase()),
     );
-  }, [searchQuery]);
+  }, [searchQuery, allStudents]);
 
   // Resolving full data arrays for rendering pills/chips
   const selectedStudentsData = useMemo(() => {
     return allStudents.filter((student) =>
       formData.participants.includes(student._id),
     );
-  }, [formData.participants]);
+  }, [formData.participants, allStudents]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Submitting Form Data:", formData);
     try {
-      const res = await api.post("/meeting/new-meet", formData);
+      const res = await api.post("/meeting/createmeeting", formData);
       console.log(res?.data?.data);
-
+      toast.success("Meeting scheduled successfully!");
+      onClose();
     } catch (error) {
       console.error(error);
+      const errorMsg = error.response?.data?.message || "Something went wrong";
+      toast.error(errorMsg);
     }
   };
 
