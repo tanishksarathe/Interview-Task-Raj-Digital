@@ -40,6 +40,9 @@ const FacultyDashboard = () => {
             setLoading(true);
             const res = await api.get("/meeting/mentor-meetings");
             setMeetings(res.data.meetings || []);
+
+            console.log("Meetings data : ", res?.data?.meetings);
+
             setIsCalendarSynced(res.data.isCalendarSynced || false);
         } catch (error) {
             console.error("Failed to fetch meetings:", error);

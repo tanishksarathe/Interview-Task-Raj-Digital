@@ -1,11 +1,59 @@
 import { Calendar, Clock, Users, ArrowRight, CheckCircle } from "lucide-react";
 import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
+import GoogleLogin from "../components/GoogleLogin";
+import { useAuth } from "../context/AuthContext";
+import { useGoogleAuth } from "../config/GoogleAuth";
+import React from "react";
 
 export default function HomePage() {
+
+  const navigate = useNavigate();
+
+  const { user, setUser, setLogin, login } = useAuth();
+
+  const { isLoading, error, isInitialized, signInWithGoogle } = useGoogleAuth();
+
+  const [loading, setLoading] = React.useState(false);
+
+
+  const handleGoogleSuccess = async (userData) => {
+    console.log("Google Login Data", userData);
+    setLoading(true);
+    try {
+      const res = await api.post("/auth/googleLogin", userData);
+
+      console.log(res?.data?.user);
+
+      toast.success(res?.data?.message);
+
+      // optional: store user or token
+      localStorage.setItem("EduUser", JSON.stringify(res?.data?.user));
+      setUser(res?.data?.user);
+      setLogin(true);
+
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const GoogleLogin = () => {
+    signInWithGoogle(handleGoogleSuccess, handleGoogleFailure);
+  };
+
+  const handleGoogleFailure = (error) => {
+    console.error("Google login failed:", error);
+    toast.error("Google login failed. Please try again.");
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Navbar */}
-      <Navbar/>
+      <Navbar />
 
       {/* Hero */}
       <section className="relative overflow-hidden">
@@ -30,14 +78,14 @@ export default function HomePage() {
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3">
-            <button className="flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:scale-105">
+            <button onClick={GoogleLogin} className="flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:scale-105">
               Get Started
               <ArrowRight size={18} />
             </button>
 
-            <button className="rounded-full border border-zinc-700 px-5 py-2.5 text-sm transition hover:border-white">
+            {/* <button onClick={() => {navigate('/login')}} className="rounded-full border border-zinc-700 px-5 py-2.5 text-sm transition hover:border-white">
               Learn More
-            </button>
+            </button> */}
           </div>
 
           {/* Stats */}
@@ -168,7 +216,7 @@ export default function HomePage() {
             and administrators connected.
           </p>
 
-          <button className="mt-10 rounded-full bg-white px-8 py-4 font-semibold text-black transition hover:scale-105">
+          <button onClick={GoogleLogin} className="mt-10 rounded-full bg-white px-8 py-4 font-semibold text-black transition hover:scale-105">
             Start Scheduling
           </button>
         </div>

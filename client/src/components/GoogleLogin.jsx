@@ -24,7 +24,7 @@ const GoogleLogin = () => {
       const res = await api.patch("/auth/update-role", formData);
 
       setUser(res?.data?.user);
-      sessionStorage.setItem("EduUser", JSON.stringify(res?.data?.user));
+      localStorage.setItem("EduUser", JSON.stringify(res?.data?.user));
 
     } catch (error) {
       console.log(error);
@@ -42,7 +42,7 @@ const GoogleLogin = () => {
       toast.success(res?.data?.message);
 
       // optional: store user or token
-      sessionStorage.setItem("EduUser", JSON.stringify(res?.data?.user));
+      localStorage.setItem("EduUser", JSON.stringify(res?.data?.user));
       setUser(res?.data?.user);
       setLogin(true);
 
@@ -54,20 +54,20 @@ const GoogleLogin = () => {
     }
   };
 
-   const shouldCompleteProfile =
-  login && user && (!user?.role || user?.role === "");
-
-  console.log(shouldCompleteProfile);
-
+  
   const GoogleLogin = () => {
     signInWithGoogle(handleGoogleSuccess, handleGoogleFailure);
   };
-
+  
   const handleGoogleFailure = (error) => {
     console.error("Google login failed:", error);
     toast.error("Google login failed. Please try again.");
   };
+  
+  const shouldCompleteProfile =
+ login && user && (!user?.role || user?.role === "");
 
+ console.log(shouldCompleteProfile);
   return (
     <>
     {

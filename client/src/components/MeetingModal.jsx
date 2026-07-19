@@ -101,7 +101,7 @@ export default function CreateMeetingModal({ onClose }) {
     e.preventDefault();
     console.log("Submitting Form Data:", formData);
     try {
-      const res = await api.post("/meeting/createmeeting", formData);
+      const res = await api.post("/meeting/createmeeting", { ...formData, mentor: user?._id || formData.mentor });
       console.log(res?.data?.data);
       toast.success("Meeting scheduled successfully!");
       onClose();

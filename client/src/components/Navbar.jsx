@@ -13,7 +13,7 @@ const Navbar = () => {
             const res = await api.get("/auth/logout");
             setUser("");
             setLogin(false);
-            sessionStorage.removeItem("EduUser");
+            localStorage.removeItem("EduUser");
             toast.success("Logout Successful");
         } catch (error) {
             console.error(error);

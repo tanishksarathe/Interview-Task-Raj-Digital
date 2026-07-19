@@ -8,8 +8,8 @@ const sendReminder = async (meeting, windowLabel) => {
       const participantEmails = meeting.participants.map(p => p.email).join(',');
 
       if (!participantEmails) {
-         console.log(`[Cron] No participants for meeting: ${meeting._id}`);
-         return true; // Return true so it marks as sent
+        console.log(`[Cron] No participants for meeting: ${meeting._id}`);
+        return true; // Return true so it marks as sent
       }
 
       await emailjs.send(
@@ -45,12 +45,12 @@ export const startReminderCron = () => {
     console.log('[Cron] Running meeting reminder check...');
     try {
       const now = new Date();
-      
+
       // Calculate target time windows
       const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
       const in1h = new Date(now.getTime() + 60 * 60 * 1000);
       const in15m = new Date(now.getTime() + 15 * 60 * 1000);
-      
+
       // 1. Check for 24 Hour Reminders
       // Find meetings that start within 24 hours, but haven't been sent a 24h reminder
       const meetings24h = await Meeting.find({

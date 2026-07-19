@@ -16,13 +16,40 @@ Teacher Meeting Scheduler is a web application designed to facilitate the schedu
 | **Meeting History** | Dedicated view for past/completed meetings. | ✅ Complete |
 | **Calendar Views** | Visual calendar mapping of scheduled meetings. | ✅ Complete |
 
-## 2. Prerequisites
+## 2. Application Process Flow
+
+To understand how the MeetSync application functions end-to-end, here is the standard user flow:
+
+### 1. Authentication & Role Selection
+- **Google Login:** Users sign in via Google OAuth. The platform verifies their credentials and issues a secure JWT token, which is stored in an HTTP-only cookie and managed globally via React Context.
+- **Role Assignment:** First-time users are prompted to choose a role: **Teacher (Faculty/Mentor)** or **Student**. This choice dynamically determines their permissions and assigns them to the appropriate dashboard.
+- **Route Protection:** All application routes (`/student-dashboard`, `/faculty-dashboard`) are protected. If an unauthenticated user tries to visit them, they are redirected. Additionally, users are restricted to their specific role dashboard to ensure data isolation.
+
+### 2. Dashboard Interface
+- **Faculty Dashboard:** Teachers can view their upcoming meetings, check attendance logs from past sessions, download Excel/PDF attendance reports, and create new meetings.
+- **Student Dashboard:** Students can see meetings assigned to them by their teachers and directly join Google Meet links when the session starts.
+
+### 3. Meeting Scheduling & Calendar Sync
+- **Creation:** A Faculty member can create a meeting by specifying a title, description, time, and selecting participating students from the directory.
+- **Google Calendar Sync:** The backend leverages the teacher's Google Calendar API token to auto-create a Google Calendar Event and securely generates a unique **Google Meet Link**.
+- **Email Notifications:** Once scheduled, the system triggers `EmailJS` to instantly send personalized meeting invitations containing the agenda and the Meet link to both the participants and the mentor.
+
+### 4. Automated Reminders (Cron Jobs)
+- A background cron job (`reminderCron.js`) runs continuously on the server, checking meeting start times every 5 minutes.
+- It automatically triggers batch EmailJS notifications at **24 hours**, **1 hour**, and **15 minutes** prior to the meeting's start time to ensure all participants are reminded. 
+- Reminders are iterated individually per user to prevent email delivery failure.
+
+### 5. Session Execution & History
+- Once the meeting time ends, the server auto-completes the meeting status.
+- The faculty can log and review the attendance of participants and can download the finalized logs using the integrated PDF/Excel export endpoints.
+
+## 3. Prerequisites
 Before you begin, ensure you have the following installed:
 - Node.js (v16.x or higher)
 - npm or yarn
 - MongoDB (local or Atlas cluster)
 
-## 3. Installation Steps
+## 4. Installation Steps
 
 **Clone the repository:**
 ```bash
@@ -64,7 +91,7 @@ EMAILJS_PRIVATE_KEY=your_emailjs_private_key
 **Database setup (MongoDB connection):**
 Ensure MongoDB is running locally on port `27017` or update the `MONGODB_URI` in your `.env` file to point to your MongoDB Atlas connection string.
 
-## 4. Running the Application
+## 5. Running the Application
 
 **Development mode:**
 Open two terminals.
@@ -89,15 +116,15 @@ cd ../server
 npm start
 ```
 
-## 5. Running Tests
+## 6. Running Tests
 *(Testing suite setup is currently pending. Unit and integration tests will be added in future releases using Jest and Supertest).*
 
-## 6. API Endpoints
+## 7. API Endpoints
 Comprehensive documentation of all backend API endpoints is available in the dedicated API documentation file.
 
 👉 [**View API Documentation**](./API_DOCUMENTATION.md)
 
-## 7. Deployment Guide
+## 8. Deployment Guide
 
 **Deploying Client on Netlify:**
 1. Connect your GitHub repository to Netlify.
@@ -112,7 +139,7 @@ Comprehensive documentation of all backend API endpoints is available in the ded
 4. Set the Start Command to `npm start`.
 5. Add all the Environment Variables from your local `.env` file.
 
-## 8. Folder Structure
+## 9. Folder Structure
 ```text
 /
 ├── client/                 # Frontend React Application (Vite)
@@ -131,7 +158,7 @@ Comprehensive documentation of all backend API endpoints is available in the ded
     └── cron/               # Scheduled background jobs (Reminders, Auto-complete)
 ```
 
-## 9. Contributing
+## 10. Contributing
 1. Fork the repository.
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
 3. Commit your changes following conventional commit messages.
@@ -140,7 +167,7 @@ Comprehensive documentation of all backend API endpoints is available in the ded
 
 Please adhere to standard code formatting conventions and ensure all code is properly commented.
 
-## 10. Support/Contact
+## 11. Support/Contact
 For any queries, feature requests, or support, please contact the developer at:
 - **Email**: developer@example.com
 - **GitHub**: [@your-username](https://github.com/your-username)

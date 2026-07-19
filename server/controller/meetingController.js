@@ -11,7 +11,6 @@ const buildMeetingDateTime = (date, time) => {
 export const addingNewMeeting = async (req, res, next) => {
   try {
     const {
-      mentor,
       participants = [],
       title,
       description,
@@ -24,13 +23,15 @@ export const addingNewMeeting = async (req, res, next) => {
       googleEventId = "",
     } = req.body;
 
+    const mentor = req.user._id;
+
     console.log("Request Body:", req.body);
 
     const mento = await User.findById(mentor);
 
     console.log("Mentor : ", mento);
 
-    if(!mento) {
+    if (!mento) {
       const error = new Error("Mentor not found");
       error.statusCode = 404;
       return next(error);
@@ -116,7 +117,7 @@ export const addingNewMeeting = async (req, res, next) => {
       if (process.env.EMAILJS_SERVICE_ID && process.env.EMAILJS_TEMPLATE_ID && process.env.EMAILJS_PUBLIC_KEY) {
         // Collect all comma-separated emails
         const participantEmails = attendees.map(a => a.email).join(',');
-        
+
         await emailjs.send(
           process.env.EMAILJS_SERVICE_ID,
           process.env.EMAILJS_TEMPLATE_ID,
@@ -160,13 +161,16 @@ export const getMentorMeetings = async (req, res, next) => {
 
     // Auto-complete logic
     await Meeting.updateMany(
-      { mentor: req.user._id, status: "Scheduled", endTime: { $lt: now.toISOString() } },
+      { mentor: req.user._id, status: "Scheduled", endTime: { $lt: now } },
       { $set: { status: "Completed" } }
     );
 
     const meetings = await Meeting.find({ mentor: req.user._id })
       .populate("participants", "username email photo")
       .sort({ date: -1, startTime: -1 });
+
+
+      console.log("Meetings : ", meetings);
 
     res.status(200).json({
       success: true,
@@ -185,7 +189,7 @@ export const getStudentMeetings = async (req, res, next) => {
 
     // Auto-complete logic
     await Meeting.updateMany(
-      { participants: req.user._id, status: "Scheduled", endTime: { $lt: now.toISOString() } },
+      { participants: req.user._id, status: "Scheduled", endTime: { $lt: now } },
       { $set: { status: "Completed" } }
     );
 
@@ -225,7 +229,7 @@ export const cancelMeeting = async (req, res, next) => {
     try {
       if (process.env.EMAILJS_SERVICE_ID && process.env.EMAILJS_TEMPLATE_ID && process.env.EMAILJS_PUBLIC_KEY) {
         const participantEmails = meeting.participants.map(a => a.email).join(',');
-        
+
         await emailjs.send(
           process.env.EMAILJS_SERVICE_ID,
           process.env.EMAILJS_TEMPLATE_ID,
